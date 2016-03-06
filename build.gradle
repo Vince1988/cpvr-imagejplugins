@@ -1,0 +1,18 @@
+group 'ch.vincentgenecand.bfh.cpvr'
+version '1.0-SNAPSHOT'
+
+task wrapper(type: Wrapper) {
+  distributionUrl = "https://services.gradle.org/distributions/gradle-$gradleVersion-all.zip"
+}
+
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'net.imagej:ij:1.50g'
+}
