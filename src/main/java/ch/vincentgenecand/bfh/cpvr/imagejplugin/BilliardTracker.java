@@ -1,5 +1,6 @@
 package ch.vincentgenecand.bfh.cpvr.imagejplugin;
 
+import ch.vincentgenecand.bfh.cpvr.imagejplugin.util.DeBayerConverter;
 import ij.ImageJ;
 import ij.ImagePlus;
 import ij.gui.NewImage;
@@ -19,47 +20,39 @@ public class BilliardTracker implements PlugInFilter {
 
     @Override
     public void run(ImageProcessor ip1) {
-        int w1 = ip1.getWidth();
-        int h1 = ip1.getHeight();
-        byte[] pix1 = (byte[]) ip1.getPixels();
+        int width = ip1.getWidth();
+        int height = ip1.getHeight();
+        byte[] pixRaw = (byte[]) ip1.getPixels();
+        DeBayerConverter deBayerConverter = new DeBayerConverter(pixRaw, width, height);
 
-        ImagePlus imgGray = NewImage.createByteImage("GrayDeBayered", w1 / 2, h1 / 2, 1, NewImage.FILL_BLACK);
+        ImagePlus imgGray = NewImage.createByteImage("GrayDeBayered", width, height, 1, NewImage.FILL_BLACK);
         ImageProcessor ipGray = imgGray.getProcessor();
-        byte[] pixGray = (byte[]) ipGray.getPixels();
-        int w2 = ipGray.getWidth();
-        int h2 = ipGray.getHeight();
 
-        ImagePlus imgRGB = NewImage.createRGBImage("RGBDeBayered", w1 / 2, h1 / 2, 1, NewImage.FILL_BLACK);
+        ImagePlus imgRGB = NewImage.createRGBImage("RGBDeBayered", width, height, 1, NewImage.FILL_BLACK);
         ImageProcessor ipRGB = imgRGB.getProcessor();
-        int[] pixRGB = (int[]) ipRGB.getPixels();
+
+        ImagePlus imgHue = NewImage.createByteImage("Hue", width, height, 1, NewImage.FILL_BLACK);
+        ImageProcessor ipHue = imgHue.getProcessor();
+
 
         long msStart = System.currentTimeMillis();
 
-        ImagePlus imgHue = NewImage.createByteImage("Hue", w1 / 2, h1 / 2, 1, NewImage.FILL_BLACK);
-        ImageProcessor ipHue = imgHue.getProcessor();
-        byte[] pixHue = (byte[]) ipHue.getPixels();
-
-        int i1 = 0, i2 = 0;
-
-        for (int y = 0; y < h2; y++) {
-            for (int x = 0; x < w2; x++) {
-                //???
-            }
-
-        }
-
+        deBayerConverter.convert();
 
         long ms = System.currentTimeMillis() - msStart;
         System.out.println(ms);
         ImageStatistics stats = ipGray.getStatistics();
         System.out.println("Mean:" + stats.mean);
 
+        ipGray.setPixels(deBayerConverter.brightness());
+        ipRGB.setPixels(deBayerConverter.deBayer());
+        ipHue.setPixels(deBayerConverter.hue());
+
         PNG_Writer png = new PNG_Writer();
         try {
             png.writeImage(imgRGB, IMG_LOCATION + "Billard1024x544x3.png", 0);
             png.writeImage(imgHue, IMG_LOCATION + "Billard1024x544x1H.png", 0);
             png.writeImage(imgGray, IMG_LOCATION + "Billard1024x544x1B.png", 0);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
