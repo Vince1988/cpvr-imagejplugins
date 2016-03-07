@@ -1,7 +1,12 @@
 package ch.vincentgenecand.bfh.cpvr.imagejplugin.util;
 
-import java.awt.*;
+import com.sun.org.apache.regexp.internal.RE;
+
+import java.awt.Color;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by Vincent Genecand on 06.03.2016.
@@ -42,7 +47,7 @@ public class DeBayerConverter {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 int index = y * width + x;
-                int rgb[] = this.getRGBValueForPixel(x, y);
+                int[] rgb = this.getRGBValueForPixel(x, y);
                 float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 
                 pixelsRGB[index] = ((rgb[0] & 0xff) << 16) + ((rgb[1] & 0xff) << 8) + (rgb[2] & 0xff);
@@ -67,7 +72,7 @@ public class DeBayerConverter {
             return BayerColor.NONE;
         }
 
-        return BayerColor.getById((y % 2 - x % 2));
+        return BayerColor.getByPosition(x, y);
     }
 
     private int getPixelValue(int x, int y) {
@@ -87,33 +92,31 @@ public class DeBayerConverter {
                     if ((i != x || j != y) && this.getPixelColor(i, j).equals(bayerColor)) {
                         value += this.getPixelValue(i, j);
                         count++;
+                        }
                     }
                 }
             }
-        }
 
         return value / count;
     }
 
     private enum BayerColor {
-        RED(1),
-        BLUE(-1),
-        GREEN(0),
-        NONE(Integer.MAX_VALUE);
+        RED,
+        GREEN,
+        BLUE,
+        NONE;
 
-        private final int id;
-
-        BayerColor(int id) {
-            this.id = id;
-        }
-
-        public static BayerColor getById(int id) {
-            return Arrays.asList(BayerColor.values()).stream().filter(c -> c.id == id).findFirst().orElse(NONE);
-        }
-
-        @Override
-        public String toString() {
-            return this.name();
+        public static BayerColor getByPosition(int x, int y) {
+            switch(x % 2 - y % 2) {
+                case -1:
+                    return RED;
+                case 0:
+                    return GREEN;
+                case 1:
+                    return BLUE;
+                default:
+                    return NONE;
+            }
         }
     }
 }

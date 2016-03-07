@@ -41,12 +41,13 @@ public class BilliardTracker implements PlugInFilter {
 
         long ms = System.currentTimeMillis() - msStart;
         System.out.println(ms);
-        ImageStatistics stats = ipGray.getStatistics();
-        System.out.println("Mean:" + stats.mean);
 
         ipGray.setPixels(deBayerConverter.brightness());
         ipRGB.setPixels(deBayerConverter.deBayer());
         ipHue.setPixels(deBayerConverter.hue());
+
+        ImageStatistics stats = ipGray.getStatistics();
+        System.out.println("Mean:" + stats.mean);
 
         PNG_Writer png = new PNG_Writer();
         try {
