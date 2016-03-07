@@ -54,6 +54,7 @@ public class DeBayerConverter {
 
     private int[] getRGBValueForPixel(int x, int y) {
         int rgb[] = new int[3];
+
         rgb[0] = this.getColorValueFromSurrounding(BayerColor.RED, x, y);
         rgb[1] = this.getColorValueFromSurrounding(BayerColor.GREEN, x, y);
         rgb[2] = this.getColorValueFromSurrounding(BayerColor.BLUE, x, y);
@@ -62,7 +63,7 @@ public class DeBayerConverter {
     }
 
     private BayerColor getPixelColor(int x, int y) {
-        if (x < 0 || y < 0 || x >= this.width() || y >= this.height()) {
+        if (x < 0 || y < 0 || x >= this.width || y >= this.height) {
             return BayerColor.NONE;
         }
 
@@ -70,7 +71,7 @@ public class DeBayerConverter {
     }
 
     private int getPixelValue(int x, int y) {
-        return this.pixels[y * this.width() + x] & 0xff;
+        return this.pixels[y * this.width + x] & 0xff;
     }
 
     private int getColorValueFromSurrounding(BayerColor bayerColor, int x, int y) {
@@ -79,6 +80,7 @@ public class DeBayerConverter {
 
         if (this.getPixelColor(x, y).equals(bayerColor)) {
             value = this.getPixelValue(x, y);
+            count++;
         } else {
             for (int i = x - 1; i < x + 2; i++) {
                 for (int j = y - 1; j < y + 2; j++) {
@@ -90,15 +92,7 @@ public class DeBayerConverter {
             }
         }
 
-        return value >> (count / 2);
-    }
-
-    private int width() {
-        return this.width;
-    }
-
-    private int height() {
-        return this.height;
+        return value / count;
     }
 
     private enum BayerColor {
