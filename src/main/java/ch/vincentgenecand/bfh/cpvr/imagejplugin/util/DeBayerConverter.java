@@ -1,12 +1,6 @@
 package ch.vincentgenecand.bfh.cpvr.imagejplugin.util;
 
-import com.sun.org.apache.regexp.internal.RE;
-
 import java.awt.Color;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Created by Vincent Genecand on 06.03.2016.
@@ -50,7 +44,7 @@ public class DeBayerConverter {
                 int[] rgb = this.getRGBValueForPixel(x, y);
                 float[] hsb = Color.RGBtoHSB(rgb[0], rgb[1], rgb[2], null);
 
-                pixelsRGB[index] = ((rgb[0] & 0xff) << 16) + ((rgb[1] & 0xff) << 8) + (rgb[2] & 0xff);
+                pixelsRGB[index] = ((rgb[0]) << 16) + ((rgb[1]) << 8) + (rgb[2]);
                 pixelsHue[index] = (byte) (hsb[0] * 255f);
                 pixelsBrightness[index] = (byte) (hsb[2] * 255f);
             }
