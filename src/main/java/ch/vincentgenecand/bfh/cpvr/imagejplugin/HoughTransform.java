@@ -81,7 +81,12 @@ public class HoughTransform implements PlugInFilter {
         }
 
         // Build histogram of the array hough2
-        // ???
+        int[] histogram = new int[maxAccum + 1];
+        for (int[] hough2Lines : hough2) {
+            for (int hough2Cell : hough2Lines) {
+                histogram[hough2Cell]++;
+            }
+        }
 
         // Get n strongest lines into arrays lineAng & lineRad
         // ???
