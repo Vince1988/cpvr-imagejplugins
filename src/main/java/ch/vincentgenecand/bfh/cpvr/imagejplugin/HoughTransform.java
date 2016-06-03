@@ -89,7 +89,20 @@ public class HoughTransform implements PlugInFilter {
         }
 
         // Get n strongest lines into arrays lineAng & lineRad
-        // ???
+        int linesFound = 0;
+        for (int i = maxAccum; linesFound < nLines && i >= 0; i--) {
+            if (histogram[i] > 0) {
+                for (int x = 0; x < hough2.length; x++) {
+                    for (int y = 0; y < hough2[x].length; y++) {
+                        if (hough2[x][y] == i) {
+                            lineAng[linesFound] = (int) (x * dAng);
+                            lineRad[linesFound] = (int) (y * dRad);
+                            linesFound++;
+                        }
+                    }
+                }
+            }
+        }
 
         long msLines = System.currentTimeMillis();
 
