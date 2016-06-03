@@ -14,5 +14,5 @@ repositories {
 }
 
 dependencies {
-    compile 'net.imagej:ij:1.50g'
+    compile 'net.imagej:ij:1.50i'
 }
