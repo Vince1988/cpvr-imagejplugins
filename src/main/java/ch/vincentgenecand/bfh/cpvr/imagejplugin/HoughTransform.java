@@ -10,7 +10,7 @@ public class HoughTransform implements PlugInFilter {
 
     public static void main(String[] args) {
         HoughTransform plugin = new HoughTransform();
-        ImagePlus im = new ImagePlus("../../Images/Polygon2.png");
+        ImagePlus im = new ImagePlus("images/Polygon2.png");
         im.show();
         plugin.setup("", im);
         plugin.run(im.getProcessor());
@@ -74,7 +74,11 @@ public class HoughTransform implements PlugInFilter {
         long msSpace = System.currentTimeMillis();
 
         // Build non maximum supression with radius nonMaxR into hough2
-        // ???
+        for (int x = 0; x < hough1.length; x++) {
+            for (int y = 0; y < hough1[x].length; y++) {
+                hough2[x][y] = valueFor(x, y, hough1, nonMaxR);
+            }
+        }
 
         // Build histogram of the array hough2
         // ???
@@ -100,7 +104,7 @@ public class HoughTransform implements PlugInFilter {
         imgAccum.updateAndDraw();
         PNG_Writer png = new PNG_Writer();
         try {
-            png.writeImage(imgAccum, "../../Images/PolygonAccum.png", 0);
+            png.writeImage(imgAccum, "images/PolygonAccum.png", 0);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -108,5 +112,27 @@ public class HoughTransform implements PlugInFilter {
         System.out.println("maxAccum: " + maxAccum);
         System.out.println("Time for Hough space: " + (msSpace - msStart) + " ms");
         System.out.println("Time for Hough lines: " + (msLines - msSpace) + " ms");
+    }
+
+    private int valueFor(int x, int y, int[][] hough, int gridRadius) {
+        int max = hough[x][y];
+        for (int dX = minValue(x, gridRadius); dX <= maxValue(x, hough.length, gridRadius); dX++) {
+            for (int dY = minValue(y, gridRadius); dY <= maxValue(x, hough[x].length, gridRadius); dY++) {
+                int val = hough[dX][dY];
+                if (val > max) {
+                    return 0;
+                }
+            }
+        }
+        return max;
+    }
+
+
+    private int maxValue(int value, int length, int gridRadius) {
+        return value + gridRadius < length ? value + gridRadius : length - 1;
+    }
+
+    private int minValue(int value, int gridRadius) {
+        return value - gridRadius >= 0 ? value - gridRadius : 0;
     }
 }
